@@ -1,0 +1,38 @@
+# Market-basket-insights
+The project aims to develop a Market Basket Analysis system for a retail business
+import pandas as pd
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+
+# Load your transaction data into a DataFrame (each row represents a transaction, and each column represents an item)
+# Replace 'transaction_data.csv' with your own data file
+data = pd.read_csv('transaction_data.csv')
+
+# Convert data to one-hot encoded format
+def encode_data(data):
+    data_encoded = pd.get_dummies(data, columns=['item_column'])  # Replace 'item_column' with the actual column name containing item data
+    return data_encoded
+
+# Perform market basket analysis
+def market_basket_analysis(data_encoded, min_support=0.01, min_confidence=0.5):
+    # Perform frequent itemset mining using Apriori
+    frequent_itemsets = apriori(data_encoded, min_support=min_support, use_colnames=True)
+    
+    # Generate association rules
+    rules = association_rules(frequent_itemsets, metric='confidence', min_threshold=min_confidence)
+    
+    return rules
+
+if __name__ == "__main__":
+    data_encoded = encode_data(data)
+    
+    # Set the minimum support threshold (e.g., 0.01, meaning an itemset must appear in at least 1% of transactions)
+    min_support = 0.01
+
+    # Set the minimum confidence threshold (e.g., 0.5, meaning an association rule must have at least 50% confidence)
+    min_confidence = 0.5
+    
+    rules = market_basket_analysis(data_encoded, min_support, min_confidence)
+    
+    # Print the association rules
+    print(rules)
